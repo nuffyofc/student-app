@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-duo-green: #58CC02;
+  --color-duo-green-dark: #46A302;
+  --color-duo-blue: #1CB0F6;
+  --color-duo-orange: #FF9600;
+  --color-duo-red: #FF4B4B;
+  --color-duo-purple: #8E57FF;
+  --color-duo-yellow: #FFD700;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #F7F7F7 0%, #FFFFFF 100%);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.duo-button {
+  background: #58CC02;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 0 0 #46A302;
+  transition: all 0.1s;
+}
+
+.duo-button:hover {
+  filter: brightness(1.05);
+}
+
+.duo-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 #46A302;
+}
+
+.duo-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2px solid #E5E5E5;
+}
+
+.duo-input {
+  border: 2px solid #E5E5E5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 16px;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.duo-input:focus {
+  outline: none;
+  border-color: #1CB0F6;
+}
