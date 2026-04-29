@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Home, Calendar, BookOpen, CheckSquare, Code, Folder, 
@@ -61,15 +61,22 @@ function App() {
     }
   }, [data.lastActive])
 
+  const xpTimeoutRef = useRef(null)
+
   const addXP = (amount, source) => {
     setData(prev => ({
       ...prev,
       xp: prev.xp + amount,
-      level: Math.floor(prev.xp / 100) + 1,
+      level: Math.floor((prev.xp + amount) / 100) + 1,
       todayXP: prev.todayXP + amount
     }))
-    setShowXPGain({ amount, source })
-    setTimeout(() => setShowXPGain(null), 2000)
+    
+    if (xpTimeoutRef.current) clearTimeout(xpTimeoutRef.current)
+    setShowXPGain({ amount, source, id: Date.now() })
+    xpTimeoutRef.current = setTimeout(() => {
+      setShowXPGain(null)
+      xpTimeoutRef.current = null
+    }, 2000)
   }
 
   const tabs = [
@@ -97,10 +104,11 @@ function App() {
       <AnimatePresence>
         {showXPGain && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-[#58CC02] text-white px-8 py-4 rounded-2xl font-bold text-2xl shadow-xl"
+            key={showXPGain.id}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: -20 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-[#58CC02] text-white px-8 py-4 rounded-2xl font-bold text-3xl shadow-[0_10px_0_#46a302] border-4 border-white"
           >
             +{showXPGain.amount} XP!
           </motion.div>
@@ -543,12 +551,15 @@ function AssignmentsView({ data, setData, addXP }) {
             value={newAssign.subject}
             onChange={e => setNewAssign(prev => ({ ...prev, subject: e.target.value }))}
           />
-          <input
-            type="date"
-            className="duo-input mb-3"
-            value={newAssign.due}
-            onChange={e => setNewAssign(prev => ({ ...prev, due: e.target.value }))}
-          />
+          <div className="relative">
+            <label className="text-xs font-bold text-gray-400 absolute -top-2 left-3 bg-white px-1">Due Date</label>
+            <input
+              type="date"
+              className="duo-input mb-3 pt-4"
+              value={newAssign.due}
+              onChange={e => setNewAssign(prev => ({ ...prev, due: e.target.value }))}
+            />
+          </div>
           <button onClick={handleAdd} className="duo-button w-full">Save</button>
         </motion.div>
       )}
@@ -1087,18 +1098,28 @@ function GamesView({ data, setData, addXP }) {
   const [question, setQuestion] = useState({ num1: 0, num2: 0, answer: 0 })
   const [options, setOptions] = useState([])
 
-  const startMathGame = () => {
+  const generateMathQuestion = () => {
     const num1 = Math.floor(Math.random() * 12) + 1
     const num2 = Math.floor(Math.random() * 12) + 1
     const answer = num1 * num2
-    const wrongAnswers = [
-      answer + Math.floor(Math.random() * 10) - 5,
-      answer + Math.floor(Math.random() * 10) - 5,
-      answer + Math.floor(Math.random() * 10) - 5
-    ].filter(a => a !== answer && a > 0)
     
+    const wrong = new Set()
+    while (wrong.size < 3) {
+      const offset = Math.floor(Math.random() * 20) - 10
+      const w = answer + offset
+      if (w !== answer && w > 0) {
+        wrong.add(w)
+      }
+    }
+    
+    const opts = [answer, ...Array.from(wrong)].sort(() => Math.random() - 0.5)
+    return { num1, num2, answer, opts }
+  }
+
+  const startMathGame = () => {
+    const { num1, num2, answer, opts } = generateMathQuestion()
     setQuestion({ num1, num2, answer })
-    setOptions([answer, ...wrongAnswers].sort(() => Math.random() - 0.5).slice(0, 4))
+    setOptions(opts)
     setScore(0)
     setGameOver(false)
     setGame('math')
@@ -1109,12 +1130,9 @@ function GamesView({ data, setData, addXP }) {
       setScore(s => s + 1)
       addXP(1, 'math game')
       setTimeout(() => {
-        const num1 = Math.floor(Math.random() * 12) + 1
-        const num2 = Math.floor(Math.random() * 12) + 1
-        const answer = num1 * num2
-        const wrongAnswers = [answer + Math.floor(Math.random() * 10) - 5, answer + Math.floor(Math.random() * 10) - 5, answer + Math.floor(Math.random() * 10) - 5].filter(a => a !== answer && a > 0)
+        const { num1, num2, answer, opts } = generateMathQuestion()
         setQuestion({ num1, num2, answer })
-        setOptions([answer, ...wrongAnswers].sort(() => Math.random() - 0.5).slice(0, 4))
+        setOptions(opts)
       }, 300)
     } else {
       setGameOver(true)
