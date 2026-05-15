@@ -1,5 +1,7 @@
 # 🧠 StudyOS - The Ultimate Student Command Center
 
+**🚀 Try it live in your browser: [study-os.vercel.app](https://student-app-jet-eta.vercel.app)**
+
 StudyOS is a powerful, privacy-first productivity application designed for students and developers. It transforms your study sessions into a gamified experience with real-time tracking, subject-based organization, and deep focus metrics.
 
 ---
