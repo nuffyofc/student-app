@@ -198,6 +198,55 @@ function App() {
   )
 }
 
+function PageGuide({ title, desc, guide }) {
+  const [isOpen, setIsOpen] = useState(false)
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-8 bg-white/60 backdrop-blur-md border border-white rounded-3xl overflow-hidden shadow-sm"
+    >
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/40 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#1CB0F6]/10 flex items-center justify-center">
+            <Lightbulb className="w-5 h-5 text-[#1CB0F6]" />
+          </div>
+          <div className="text-left">
+            <h3 className="font-black text-gray-800 uppercase tracking-tight text-sm">How to use {title}</h3>
+            <p className="text-xs text-gray-500 font-medium">{isOpen ? 'Click to collapse' : 'Click to read guide'}</p>
+          </div>
+        </div>
+        <ChevronLeft className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-90' : '-rotate-90'}`} />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="px-6 pb-6"
+          >
+            <div className="pt-4 border-t border-gray-100 space-y-4">
+              <p className="text-gray-600 leading-relaxed font-medium">
+                {desc}
+              </p>
+              <p className="text-gray-600 leading-relaxed font-medium bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50">
+                <span className="text-[#1CB0F6] font-black mr-2">PRO TIP:</span>
+                {guide}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
 function ActivityHeatmap({ activityLogs }) {
   const days = Array.from({length: 28}, (_, i) => {
     const d = new Date();
@@ -244,6 +293,12 @@ function Dashboard({ data, xpProgress, xpToNext, chartData, onNavigate }) {
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
+      <PageGuide 
+        title="Dashboard" 
+        desc="The Dashboard is your mission control center, providing a birds-eye view of your academic performance and daily productivity. It tracks your level, XP progress, and current streak to keep you motivated and accountable."
+        guide="Use the stat cards to monitor your growth and check the priority tasks section for immediate action items. You can also view your activity heatmap and focus trends to identify your peak performance hours throughout the week."
+      />
+
       <div className="flex justify-between items-center bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-3xl md:text-4xl font-black text-gray-800 tracking-tight">Welcome back!</h1>
@@ -405,8 +460,14 @@ function CalendarView({ data, setData, addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Calendar" 
+        desc="The Calendar view is your strategic planning tool for managing deadlines, exams, and important study milestones. It offers a clear visual representation of your upcoming schedule so you can avoid last-minute cramming and stay ahead of your workload."
+        guide="Simply click the 'Add Event' button to log a new date with a title and specific date. Once saved, events will appear as green dots on the calendar grid; you can click on individual events to see details or remove them when they are no longer relevant."
+      />
+
       <div className="duo-card">
         <div className="flex justify-between items-center mb-4">
           <button onClick={() => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1))} className="p-2 hover:bg-gray-100 rounded">&#9664;</button>
@@ -527,8 +588,14 @@ function AssignmentsView({ data, setData, addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Assignments" 
+        desc="This page is dedicated to tracking formal academic assignments, projects, and homework that have specific due dates. It helps you prioritize your schoolwork by organizing everything in a single, sorted list based on urgency."
+        guide="Enter the assignment title, subject, and due date to create a new tracking card. As you finish your work, click the checkmark to mark it complete and earn bonus XP, which will automatically contribute to your overall level progression."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Assignments</h2>
       
       <button onClick={() => setShowAdd(!showAdd)} className="duo-button w-full mb-4 flex items-center justify-center gap-2">
@@ -670,6 +737,12 @@ function TasksView({ data, setData, addXP }) {
       animate={{ x: 0, opacity: 1 }}
       className="max-w-2xl mx-auto pt-8 pb-24"
     >
+      <PageGuide 
+        title="War Room Tasks" 
+        desc="The War Room is where deep work happens, allowing you to break down your large projects into actionable, timed focus sessions. It combines task management with a real-time timer to ensure you stay concentrated on one specific goal at a time."
+        guide="Add a task and select its category to create a focus card. Click the 'Play' button to start the integrated timer while you work; once finished, hit 'Done' to log your time spent and permanently archive the task while receiving XP rewards for your focus."
+      />
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-black text-gray-800 tracking-tight">Focus Tasks</h2>
         <button onClick={() => setShowAdd(!showAdd)} className="bg-[#58CC02] text-white px-4 py-2 rounded-xl font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-2">
@@ -834,8 +907,14 @@ function ExercisesView({ data, setData, addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Coding Projects" 
+        desc="Coding Projects is a specialized tracker for long-term development work or iterative learning exercises where progress is measured in percentages. It’s perfect for tracking the completion of coding courses, building apps, or mastering new programming concepts."
+        guide="Create a project by giving it a name, and then use the interactive slider to update your progress as you hit different milestones. Reaching 100% completion will award you a significant XP boost, reflecting the effort required for multi-step projects."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Coding Projects</h2>
       
       <button onClick={() => setShowAdd(!showAdd)} className="duo-button w-full mb-4 flex items-center justify-center gap-2">
@@ -905,8 +984,14 @@ function StudyView({ data, setData }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Study Resources" 
+        desc="The Study Material section serves as your personal knowledge repository for saving essential links, notes, and file references. It organizes your external learning resources so you don't have to waste time searching through bookmarks or desktop folders."
+        guide="Use the 'Add Resource' form to select a type—Link, Note, or File—and enter the corresponding title and content. Links are clickable for quick access to websites, while notes provide a space for short summaries or reminders related to your subjects."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Study Material</h2>
       
       <button onClick={() => setShowAdd(!showAdd)} className="duo-button w-full mb-4 flex items-center justify-center gap-2">
@@ -987,8 +1072,14 @@ function KnowledgeView({ data, setData, addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Knowledge Log" 
+        desc="The Knowledge Log is a reflective space for recording the core concepts and new facts you learn each day. Documenting your daily takeaways reinforces your memory and provides a chronological history of your intellectual growth over time."
+        guide="Click 'Add Entry' and write a short summary of what you discovered during your study sessions. Each entry is timestamped and saved in a scrolling log, helping you visualize the breadth of topics you've mastered since starting with StudyOS."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Knowledge Log</h2>
       <p className="text-gray-500 mb-4">What did you learn today?</p>
       
@@ -1055,8 +1146,14 @@ function TimerView({ addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Pomodoro Timer" 
+        desc="The Pomodoro Timer implements the famous time-management technique to balance intense focus with regular breaks. This method prevents burnout and maintains high levels of productivity by breaking your study day into manageable intervals."
+        guide="Set the timer and press 'Play' to start a 25-minute deep focus session. When the timer hits zero, you’ll earn XP and a session count will be added to your daily total; use the 'Reset' button to start over or take a short break before beginning your next interval."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Pomodoro Timer</h2>
       
       <div className="duo-card text-center py-12 mb-4">
@@ -1199,8 +1296,14 @@ function GamesView({ data, setData, addXP }) {
     <motion.div 
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="max-w-md mx-auto pt-12"
+      className="max-w-md mx-auto pt-12 pb-12"
     >
+      <PageGuide 
+        title="Brain Games" 
+        desc="Brain Games offer a fun, gamified way to sharpen your cognitive skills and take a productive break from heavy studying. These mini-games are designed to improve your mental math speed, memory, and reaction times while still contributing to your XP goal."
+        guide="Select 'Math Quick Fire' to start a multiplication challenge where you must choose the correct answer from multiple options. Every correct answer earns you XP, but be careful—the game ends if you make a mistake, forcing you to try and beat your high score."
+      />
+
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Brain Games</h2>
       
       <div className="duo-card mb-4">
